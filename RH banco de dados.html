@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Banco de Talentos</title>
+
+<style>
+:root {
+    --azul: #2563eb;
+    --azul-escuro: #1e40af;
+    --cinza-bg: #f1f5f9;
+    --cinza-texto: #334155;
+    --branco: #ffffff;
+    --vermelho: #dc2626;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--cinza-bg);
+    margin: 0;
+    padding: 20px;
+    color: var(--cinza-texto);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--azul-escuro);
+}
+
+h2 {
+    margin-bottom: 15px;
+    color: var(--azul);
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.box {
+    background: var(--branco);
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--azul);
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.2);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+button {
+    padding: 12px;
+    border-radius: 6px;
+    border: none;
+    background: var(--azul);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: var(--azul-escuro);
+}
+
+.candidato {
+    padding: 15px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.candidato:last-child {
+    border-bottom: none;
+}
+
+.candidato strong {
+    font-size: 16px;
+    color: var(--azul-escuro);
+}
+
+.remover {
+    margin-top: 10px;
+    background: var(--vermelho);
+}
+
+.remover:hover {
+    background: #991b1b;
+}
+
+.info {
+    font-size: 13px;
+    color: #475569;
+    margin-top: 4px;
+}
+
+.footer {
+    text-align: center;
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 30px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>Banco de Talentos</h1>
+
+<div class="box">
+<h2>Cadastrar Currículo</h2>
+
+<div class="form-grid">
+<input id="nome" placeholder="Nome completo">
+<input id="idade" type="number" placeholder="Idade">
+
+<select id="escolaridade">
+    <option value="">Escolaridade</option>
+    <option>Ensino Médio</option>
+    <option>Técnico</option>
+    <option>Superior Incompleto</option>
+    <option>Superior Completo</option>
+    <option>Pós-graduação</option>
+</select>
+
+<input id="endereco" placeholder="Endereço">
+<input id="cargo" placeholder="Cargo / Área de interesse">
+
+<select id="nivel">
+    <option value="">Nível profissional</option>
+    <option>Júnior</option>
+    <option>Pleno</option>
+    <option>Sênior</option>
+</select>
+
+<input id="experiencia" type="number" placeholder="Anos de experiência">
+<input id="habilidades" placeholder="Habilidades (ex: Excel, Atendimento, Java)">
+</div>
+
+<textarea id="descricao" placeholder="Descrição da experiência profissional"></textarea>
+<textarea id="observacoes" placeholder="Observações do RH"></textarea>
+
+<button onclick="adicionar()">Salvar no Banco de Talentos</button>
+</div>
+
+<div class="box">
+<h2>Buscar Talentos</h2>
+
+<div class="form-grid">
+<input id="buscaNome" placeholder="Buscar por nome">
+<input id="buscaCargo" placeholder="Cargo ou área">
+
+<select id="buscaNivel">
+    <option value="">Todos os níveis</option>
+    <option>Júnior</option>
+    <option>Pleno</option>
+    <option>Sênior</option>
+</select>
+
+<input id="buscaExperiencia" type="number" placeholder="Experiência mínima">
+<input id="buscaHabilidade" placeholder="Habilidade desejada">
+</div>
+
+<button onclick="filtrar()">Buscar</button>
+</div>
+
+<div class="box">
+<h2>Talentos Cadastrados</h2>
+<div id="lista"></div>
+</div>
+
+<p class="footer">
+Sistema demonstrativo de RH — dados armazenados localmente (LGPD)
+</p>
+</div>
+
+<script>
+let banco = JSON.parse(localStorage.getItem("bancoTalentos")) || [];
+
+function salvar() {
+    localStorage.setItem("bancoTalentos", JSON.stringify(banco));
+}
+
+function adicionar() {
+    let candidato = {
+        id: Date.now(),
+        nome: nome.value,
+        idade: idade.value,
+        escolaridade: escolaridade.value,
+        endereco: endereco.value,
+        cargo: cargo.value,
+        nivel: nivel.value,
+        experiencia: Number(experiencia.value),
+        habilidades: habilidades.value,
+        descricao: descricao.value,
+        observacoes: observacoes.value
+    };
+
+    if (!candidato.nome || !candidato.cargo || !candidato.nivel) {
+        alert("Preencha pelo menos nome, cargo e nível.");
+        return;
+    }
+
+    banco.push(candidato);
+    salvar();
+    limpar();
+    mostrar(banco);
+}
+
+function limpar() {
+    document.querySelectorAll("input, textarea, select").forEach(c => c.value = "");
+}
+
+function mostrar(lista) {
+    let div = document.getElementById("lista");
+    div.innerHTML = "";
+
+    if (lista.length === 0) {
+        div.innerHTML = "Nenhum talento encontrado.";
+        return;
+    }
+
+    lista.forEach(c => {
+        div.innerHTML += `
+        <div class="candidato">
+            <strong>${c.nome}</strong>
+            <div class="info">Cargo: ${c.cargo} | Nível: ${c.nivel}</div>
+            <div class="info">Experiência: ${c.experiencia || 0} anos</div>
+            <div class="info">Habilidades: ${c.habilidades}</div>
+            <button class="remover" onclick="remover(${c.id})">Remover</button>
+        </div>`;
+    });
+}
+
+function filtrar() {
+    let nomeBusca = buscaNome.value.toLowerCase();
+    let cargoBusca = buscaCargo.value.toLowerCase();
+    let nivelBusca = buscaNivel.value;
+    let expBusca = buscaExperiencia.value;
+    let habBusca = buscaHabilidade.value.toLowerCase();
+
+    let resultado = banco.filter(c =>
+        (nomeBusca === "" || c.nome.toLowerCase().includes(nomeBusca)) &&
+        (cargoBusca === "" || c.cargo.toLowerCase().includes(cargoBusca)) &&
+        (nivelBusca === "" || c.nivel === nivelBusca) &&
+        (expBusca === "" || c.experiencia >= expBusca) &&
+        (habBusca === "" || c.habilidades.toLowerCase().includes(habBusca))
+    );
+
+    mostrar(resultado);
+}
+
+function remover(id) {
+    if (confirm("Remover este candidato do banco de talentos?")) {
+        banco = banco.filter(c => c.id !== id);
+        salvar();
+        mostrar(banco);
+    }
+}
+
+mostrar(banco);
+</script>
+
+</body>
+</html>
+
